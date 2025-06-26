@@ -1,9 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: [
+    './src/**/*.{html,js,ts,jsx,tsx}', 
+  ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        gamja: ['"Gamja Flower"', 'cursive'],
+        gantari: ['"Gantari"', 'sans-serif'],
+        fingerpaint: ["Finger Paint", 'sans-serif'],
+      },
+    },
   },
   plugins: [],
-}
-
+};

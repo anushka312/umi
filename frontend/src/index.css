@@ -1,3 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gantari:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Finger+Paint&family=Gamja+Flower&family=Gantari:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Prata&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
