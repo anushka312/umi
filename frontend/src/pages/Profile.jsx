@@ -1,72 +1,122 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Layout from './Layout';
+
+const avatarOptions = [
+  '/assets/avatar_green_1.jpg',
+  '/assets/avatar_blue_2.jpg',
+  '/assets/avatar_red_3.jpg',
+];
 
 const Profile = () => {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState('');
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatar, setAvatar] = useState(avatarOptions[0]);
 
-  // On mount, check localStorage
   useEffect(() => {
     const address = localStorage.getItem('walletAddress');
     if (address) {
       setWalletAddress(address);
+      fetchUser(address);
     } else {
-      navigate('/'); // Redirect if not logged in
+      navigate('/');
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('walletAddress'); // Clear wallet
-    setWalletAddress('');
-    navigate('/');
+  const fetchUser = async (address) => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/users/${address}`);
+      const user = res.data;
+      if (user?.profile) {
+        setName(user.profile.name || '');
+        setBio(user.profile.bio || '');
+        setAvatar(user.profile.avatar || avatarOptions[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/users', {
+        walletAddress,
+        name,
+        bio,
+        avatar,
+      });
+      alert('Profile updated!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    }
   };
 
   return (
-    <div className='w-full h-full'>
-      {/* Navbar */}
-      <div className="bg-[#14D30D] h-20 w-full flex items-center justify-between px-8">
-        <div className="flex items-center gap-x-12">
-          <Link to="/" className="font-gantari font-bold text-white text-4xl">
-            VerdeFi
-          </Link>
-        </div>
-        <button className="bg-white font-gantari text-[#14D30D] font-semibold px-6 py-2 rounded-xl text-lg">
-          {walletAddress
-            ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-            : 'Connect Wallet'}
-        </button>
-      </div>
+    <Layout>
+      <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] px-4">
+        <h1 className="text-6xl font-gamja font-bold mb-6 text-center">Your Profile</h1>
 
-      {/* Sidebar + Content */}
-      <div className="flex h-[calc(100vh-5rem)]">
-        {/* Sidebar */}
-        <div className="w-64 bg-gray-100 p-6 shadow-md flex flex-col justify-between">
+        <div className="space-y-6 max-w-lg font-gamja text-2xl w-full bg-white p-6 rounded-xl shadow-md">
           <div>
-            <h2 className="text-3xl font-gantari font-semibold mb-6">Menu</h2>
-            <ul className="space-y-4 font-gamja text-2xl">
-              <li><Link to="/profile" className="hover:text-green-600">Profile</Link></li>
-              <li><a href="#" className="hover:text-green-600">Games</a></li>
-              <li><a href="#" className="hover:text-green-600">My Donations</a></li>
-              <li><a href="#" className="hover:text-green-600">Projects</a></li>
-              <li><a href="#" className="hover:text-green-600">Help Support</a></li>
-            </ul>
+            <label className="block text-3xl font-semibold mb-1">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
           </div>
-          {/* Logout */}
+
+          <div>
+            <label className="block text-3xl font-semibold mb-1">Bio</label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-3xl font-semibold mb-2">Choose Avatar</label>
+            <div className="flex gap-4">
+              {avatarOptions.map((img) => (
+                <label key={img} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="avatar"
+                    value={img}
+                    checked={avatar === img}
+                    onChange={() => setAvatar(img)}
+                    className="hidden"
+                  />
+                  <div
+                    className={`w-20 h-20 rounded-full overflow-hidden border-4 ${
+                      avatar === img ? 'border-green-500' : 'border-transparent'
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt="avatar"
+                      className="w-full h-full object-cover scale-125"
+                    />
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <button
-            onClick={handleLogout}
-            className="mt-10 text-red-600 hover:underline text-lg font-semibold"
+            onClick={handleSubmit}
+            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl text-3xl"
           >
-            Logout
+            Save Profile
           </button>
         </div>
-
-        {/* Main Content */}
-        <div className="flex-1 p-10">
-          <h1 className="text-6xl font-gamja font-bold mb-4">Welcome to Your Profile</h1>
-          
-        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

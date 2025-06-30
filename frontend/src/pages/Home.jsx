@@ -16,7 +16,7 @@ const Home = () => {
       const accounts = await provider.send('eth_requestAccounts', []);
       setWalletAddress(accounts[0]);
       localStorage.setItem('walletAddress', accounts[0]); // save
-      navigate('/profile', { state: { walletAddress: accounts[0] } });
+      navigate('/dashboard', { state: { walletAddress: accounts[0] } });
     } catch (error) {
       console.error("Connection Error:", error);
     }
