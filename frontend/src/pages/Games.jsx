@@ -7,6 +7,9 @@ const Games = () => {
   const [loading, setLoading] = useState(true);
 
   const walletAddress = localStorage.getItem('walletAddress');
+  axios.defaults.baseURL = 'http://localhost:5000';
+
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -25,15 +28,30 @@ const Games = () => {
     }
   }, [walletAddress]);
 
-  const handleUnlock = () => {
-    alert('Redirecting to UMI payment gateway...');
-    // Payment logic here
+  const handleUnlock = async () => {
+    try {
+      // fake payment call
+      alert('Processing paymentI...');
+
+      const res = await axios.post(`/api/users/${walletAddress}/purchase`, {
+        itemId: 'fishies',
+        name: 'Fishies of the Game',
+        amount: 1.5,
+      });
+
+      alert('Game unlocked!');
+      window.location.href = '/games/fishies'; // or use navigate()
+    } catch (err) {
+      console.error('Payment failed:', err);
+      alert('Payment failed. Try again.');
+    }
   };
 
+
   const handlePlay = () => {
-    alert('Launching game...');
-    // Launch game logic here
+    window.location.href = '/games/fishies'; // or navigate('/games/fishies') if using React Router
   };
+
 
   const isPurchased = user?.purchases?.some(p => p.itemId === 'fishies');
 
@@ -69,7 +87,7 @@ const Games = () => {
 
                 {!isPurchased && (
                   <p className="text-green-600 font-semibold text-xl font-gantari">
-                    Unlock for just <span className="font-bold">1.5 UMI</span>
+                    Unlock for just <span className="font-bold">0.1 ETH</span>
                   </p>
                 )}
               </div>

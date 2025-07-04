@@ -14,4 +14,7 @@ app.use(express.json());
 const userRoutes = require('./routes/userRoutes');
 app.use(userRoutes);
 
+const projectRoutes = require('./routes/projectRoutes');
+app.use(projectRoutes);
+
 app.listen(5000, () => console.log('Server running on port 5000'));

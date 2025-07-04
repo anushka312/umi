@@ -56,34 +56,40 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] px-4">
-        <h1 className="text-6xl font-gamja font-bold mb-6 text-center">Your Profile</h1>
+      <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] px-4 bg-gray-50">
+        <h1 className="text-5xl font-gamja font-bold mb-10 text-lime-700 text-center">Edit Your Profile</h1>
 
-        <div className="space-y-6 max-w-lg font-gamja text-2xl w-full bg-white p-6 rounded-xl shadow-md">
+        <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-8 space-y-8 font-gantari">
+          {/* Name Input */}
           <div>
-            <label className="block text-3xl font-semibold mb-1">Name</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded"
+              placeholder="Enter your name"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none"
             />
           </div>
 
+          {/* Bio Input */}
           <div>
-            <label className="block text-3xl font-semibold mb-1">Bio</label>
+            <label className="block text-lg font-semibold mb-2 text-gray-700">Bio</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full p-2 border rounded"
+              placeholder="Write something about yourself"
+              rows="4"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none"
             />
           </div>
 
+          {/* Avatar Picker */}
           <div>
-            <label className="block text-3xl font-semibold mb-2">Choose Avatar</label>
-            <div className="flex gap-4">
+            <label className="block text-lg font-semibold mb-4 text-gray-700">Choose Avatar</label>
+            <div className="flex gap-6 justify-center md:justify-start">
               {avatarOptions.map((img) => (
-                <label key={img} className="cursor-pointer">
+                <label key={img} className="cursor-pointer group">
                   <input
                     type="radio"
                     name="avatar"
@@ -93,14 +99,16 @@ const Profile = () => {
                     className="hidden"
                   />
                   <div
-                    className={`w-20 h-20 rounded-full overflow-hidden border-4 ${
-                      avatar === img ? 'border-green-500' : 'border-transparent'
+                    className={`w-24 h-24 rounded-full overflow-hidden border-4 transition duration-300 ${
+                      avatar === img
+                        ? 'border-lime-500 ring-4 ring-lime-300'
+                        : 'border-transparent group-hover:scale-105'
                     }`}
                   >
                     <img
                       src={img}
                       alt="avatar"
-                      className="w-full h-full object-cover scale-125"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </label>
@@ -108,12 +116,15 @@ const Profile = () => {
             </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl text-3xl"
-          >
-            Save Profile
-          </button>
+          {/* Submit Button */}
+          <div className="flex justify-center pt-4">
+            <button
+              onClick={handleSubmit}
+              className="bg-lime-600 hover:bg-lime-700 text-white text-xl px-8 py-3 rounded-xl shadow-lg transition duration-300"
+            >
+              Save Profile
+            </button>
+          </div>
         </div>
       </div>
     </Layout>

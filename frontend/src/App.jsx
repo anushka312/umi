@@ -11,6 +11,7 @@ import Donations from './pages/Donations'
 import Projects from './pages/Projects'
 import Project from './pages/Project'
 import HelpSupport from './pages/HelpSupport'
+import Fishies from './pages/Fishies';
 const App = () => {
   return (
     <div>
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<Project />} />
         <Route path="/help" element={<HelpSupport />} />
+        <Route path="/games/fishies" element={<Fishies />} />
       </Routes>
     </div>
   )
