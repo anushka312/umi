@@ -1,16 +1,23 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Layout from './Layout';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
-import projects from '../data/projects';
 
 const Projects = () => {
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/projects')
+      .then((res) => setProjects(res.data))
+      .catch((err) => console.error('Error fetching projects:', err));
+  }, []);
   return (
     <Layout>
         <div
         className="min-h-screen w-full bg-cover bg-center bg-no-repeat py-12 px-4"
-        style={{ backgroundImage: "url('/assets/image4.png')" }}
+        style={{ backgroundImage: "url('/assets/image5.png')" }}
       >
-      <h1 className="text-5xl text-white font-gamja font-bold mb-8">Explore Projects</h1>
+      <h1 className="text-6xl font-gamja font-bold mb-8">Explore Projects</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {projects.map((project) => (
           <Link

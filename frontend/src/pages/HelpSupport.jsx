@@ -20,6 +20,13 @@ const HelpSupport = () => {
           </div>
 
           <div>
+            <h2 className="text-3xl font-semibold font-gamja text-green-600">I can't see my name, it says 'Anonymous'?</h2>
+            <p className="text-gray-700 font-gantari mt-1 text-lg">
+              If you have just connected your wallet, then head to Profile tab and save your details. It will fix the problem next time you open dashboard.
+            </p>
+          </div>
+
+          <div>
             <h2 className="text-3xl font-semibold font-gamja text-green-600">I purchased a game but it won't launch</h2>
             <p className="text-gray-700 font-gantari mt-1 text-lg">
               Ensure your wallet is connected. If the problem persists, try refreshing the page or contact support.

@@ -3,9 +3,8 @@ const projects = [
     id: '1',
     name: 'Clean the Ganges',
     wallet: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
-    description:
-      'Join us in removing plastic waste from the sacred river.',
-    image: '/assets/ganges.jpg',
+    description: 'Join us in removing plastic waste from the sacred river.',
+    image: 'https://res.cloudinary.com/da5ytwk7j/image/upload/v1751609967/ganges_kd6vvm.jpg',
     raised: 1.2,
     goal: 2.0,
     contributors: 43,
@@ -18,9 +17,8 @@ const projects = [
     id: '2',
     name: 'Solar Village',
     wallet: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
-    description:
-      'Help install solar panels in a remote village in Rajasthan.',
-    image: '/assets/solar.jpg',
+    description: 'Help install solar panels in a remote village in Rajasthan.',
+    image: 'https://res.cloudinary.com/da5ytwk7j/image/upload/v1751609980/solar_fo4raf.jpg',
     raised: 0.9,
     goal: 1.5,
     contributors: 30,
@@ -30,5 +28,3 @@ const projects = [
     benefits: ['Earn “Solar Star” NFT', 'Extra 100 XP in your account'],
   },
 ];
-
-export default projects;
