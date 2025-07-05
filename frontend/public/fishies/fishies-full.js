@@ -198,7 +198,7 @@ function restartGame(scene) {
 async function saveScore(score) {
   const walletAddress = localStorage.getItem('walletAddress');
   try {
-    await fetch(`http://localhost:5000/api/users/${walletAddress}/gameStats`, {
+    await fetch(`https://umi-b.onrender.com/api/users/${walletAddress}/gameStats`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ gameId, score })
@@ -211,7 +211,7 @@ async function saveScore(score) {
 async function fetchHighScore() {
   const walletAddress = localStorage.getItem('walletAddress');
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${walletAddress}`);
+    const res = await fetch(`https://umi-b.onrender.com/api/users/${walletAddress}`);
     const user = await res.json();
     const stats = user.gameStats?.find(s => s.gameId === gameId);
     if (stats) highScoreText.setText('High Score: ' + stats.highestScore);
@@ -223,7 +223,7 @@ async function fetchHighScore() {
 async function fetchLeaderboard() {
   const walletAddress = localStorage.getItem('walletAddress');
   try {
-    const res = await fetch('http://localhost:5000/api/users');
+    const res = await fetch('https://umi-b.onrender.com/api/users');
     const users = await res.json();
     const scores = users.map(u => {
       const stat = u.gameStats?.find(s => s.gameId === gameId);

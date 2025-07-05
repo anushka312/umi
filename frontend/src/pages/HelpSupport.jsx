@@ -20,6 +20,13 @@ const HelpSupport = () => {
           </div>
 
           <div>
+            <h2 className="text-3xl font-semibold font-gamja text-green-600">I can't see the details loaded?</h2>
+            <p className="text-gray-700 font-gantari mt-1 text-lg">
+              Our API's work at a relapse of 50 seconds, please wait while it gets rendered. It's not a technical issue.
+            </p>
+          </div>
+
+          <div>
             <h2 className="text-3xl font-semibold font-gamja text-green-600">I can't see my name, it says 'Anonymous'?</h2>
             <p className="text-gray-700 font-gantari mt-1 text-lg">
               If you have just connected your wallet, then head to Profile tab and save your details. It will fix the problem next time you open dashboard.

@@ -28,7 +28,7 @@ const Profile = () => {
 
   const fetchUser = async (address) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/${address}`);
+      const res = await axios.get(`https://umi-b.onrender.com/api/users/${address}`);
       const user = res.data;
       if (user?.profile) {
         setName(user.profile.name || '');
@@ -42,7 +42,7 @@ const Profile = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/api/users', {
+      await axios.post('https://umi-b.onrender.com/api/users', {
         walletAddress,
         name,
         bio,
