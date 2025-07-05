@@ -6,7 +6,7 @@ const Fishies = () => {
     <Layout>
       <div className="w-full h-screen bg-black flex items-center justify-center">
         <iframe
-          src="/fishies/index.html"
+          src={`${window.location.origin}/fishies/index.html`}
           title="Fishies Game"
           width="100%"
           height="100%"
