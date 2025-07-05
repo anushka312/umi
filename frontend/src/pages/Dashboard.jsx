@@ -22,7 +22,7 @@ const Dashboard = () => {
 
   const fetchUser = async (address) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/${address}`);
+      const res = await axios.get(`https://umi-b.onrender.com/api/users/${address}`);
       setUser(res.data);
     } catch (error) {
       console.error('Error fetching user:', error);

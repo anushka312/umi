@@ -7,7 +7,7 @@ const Games = () => {
   const [loading, setLoading] = useState(true);
 
   const walletAddress = localStorage.getItem('walletAddress');
-  axios.defaults.baseURL = 'http://localhost:5000';
+  axios.defaults.baseURL = 'https://umi-b.onrender.com';
 
 
 

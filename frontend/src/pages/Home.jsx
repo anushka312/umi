@@ -16,8 +16,9 @@ const Home = () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send('eth_requestAccounts', []);
         setWalletAddress(accounts[0]);
-        localStorage.setItem('walletAddress', accounts[0]);
+        localStorage.setItem('walletAddress', accounts[0]); //  correct
         navigate('/dashboard', { state: { walletAddress: accounts[0] } });
+
       } catch (error) {
         console.error('Connection Error:', error);
       }

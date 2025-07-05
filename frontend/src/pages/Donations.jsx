@@ -14,10 +14,10 @@ const Donations = () => {
       setWallet(address);
 
       try {
-        const usersRes = await axios.get('http://localhost:5000/api/users');
+        const usersRes = await axios.get('https://umi-b.onrender.com/api/users');
         const user = usersRes.data.find(u => u.walletAddress === address);
 
-        const projectsRes = await axios.get('http://localhost:5000/api/projects');
+        const projectsRes = await axios.get('https://umi-b.onrender.com/api/projects');
         setProjects(projectsRes.data);
 
         if (user?.transactions?.length) {

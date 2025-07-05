@@ -15,13 +15,13 @@ const Project = () => {
         const address = localStorage.getItem('walletAddress');
         if (address) setWalletAddress(address);
 
-        axios.get(`http://localhost:5000/api/projects/${id}`)
+        axios.get(`https://umi-b.onrender.com/api/projects/${id}`)
             .then((res) => setProject(res.data))
             .catch(() => setProject(null));
     }, [id]);
 
     const donate = async () => {
-        await axios.post('http://localhost:5000/api/users', {
+        await axios.post('https://umi-b.onrender.com/api/users', {
             walletAddress,
             name: '',
             bio: '',
@@ -48,13 +48,13 @@ const Project = () => {
             setTxStatus('Donation successful! Thank you ❤️');
 
             // Update DB
-            await axios.post(`http://localhost:5000/api/projects/${id}/donate`, {
+            await axios.post(`https://umi-b.onrender.com/api/projects/${id}/donate`, {
                 amount: parseFloat(amount),
                 walletAddress,
             });
 
             // Refresh project data
-            const updated = await axios.get(`http://localhost:5000/api/projects/${id}`);
+            const updated = await axios.get(`https://umi-b.onrender.com/api/projects/${id}`);
             setProject(updated.data);
             setAmount(''); // clear input
         } catch (err) {
