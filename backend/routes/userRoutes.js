@@ -15,8 +15,13 @@ router.post('/api/users', async (req, res) => {
         profile: { name, bio, avatar },
       });
     } else {
-      user.profile = { name, bio, avatar };
+      user.profile = {
+        name: name || user.profile?.name || '',
+        bio: bio || user.profile?.bio || '',
+        avatar: avatar || user.profile?.avatar || '',
+      };
     }
+
 
     await user.save();
     res.status(200).json(user);

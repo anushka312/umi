@@ -17,15 +17,30 @@ const Dashboard = () => {
     }
 
     setWalletAddress(address);
-    fetchUser(address);
+    fetchUserOrCreate(address);
   }, []);
 
-  const fetchUser = async (address) => {
+  const fetchUserOrCreate = async (address) => {
     try {
       const res = await axios.get(`https://umi-b.onrender.com/api/users/${address}`);
-      setUser(res.data);
+      setUser(res.data); // Existing user found
     } catch (error) {
-      console.error('Error fetching user:', error);
+      if (error.response?.status === 404) {
+        // User not found — create a new one (optional or with blank fields)
+        try {
+          const createRes = await axios.post(`https://umi-b.onrender.com/api/users`, {
+            walletAddress: address,
+            name: '',    // Or prompt the user to enter later
+            bio: '',
+            avatar: '',
+          });
+          setUser(createRes.data);
+        } catch (createErr) {
+          console.error('Error creating user:', createErr);
+        }
+      } else {
+        console.error('Error fetching user:', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +71,9 @@ const Dashboard = () => {
                 />
               </div>
               <div className="text-center md:text-left">
-                <h2 className="text-2xl font-bold text-gray-800">{user.profile?.name || 'Anonymous User'}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {user.profile?.name?.trim() || 'Anonymous User'}
+                </h2>
                 <p className="text-gray-500 text-sm">{walletAddress}</p>
               </div>
             </div>
@@ -64,7 +81,7 @@ const Dashboard = () => {
             {/* Bio */}
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-gray-700 mb-2">📝 Bio</h3>
-              <p className="text-gray-600">{user.profile?.bio || 'No bio provided yet.'}</p>
+              <p className="text-gray-600">{user.profile?.bio?.trim() || 'No bio provided yet.'}</p>
             </div>
 
             {/* Game Stats */}
