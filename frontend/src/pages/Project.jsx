@@ -20,7 +20,31 @@ const Project = () => {
             .catch(() => setProject(null));
     }, [id]);
 
+    const checkUmiNetwork = async () => {
+        const provider = window.rabby || window.ethereum;
+        if (!provider) {
+            alert('No wallet found. Please install Rabby.');
+            return false;
+        }
+
+        try {
+            const chainId = await provider.request({ method: 'eth_chainId' });
+            console.log('Current chainId:', chainId);
+            if (chainId !== '0xa455') {
+                alert('Please switch to Umi Devnet in Rabby Wallet (chainId: 0xa455).');
+                return false;
+            }
+            return true;
+        } catch (err) {
+            console.error('Error checking network:', err);
+            return false;
+        }
+    };
+
     const donate = async () => {
+        const isCorrectNetwork = await checkUmiNetwork();
+        if (!isCorrectNetwork) return;
+
         await axios.post('https://umi-b.onrender.com/api/users', {
             walletAddress,
             name: '',
@@ -28,14 +52,13 @@ const Project = () => {
             avatar: '',
         });
 
-        if (!window.ethereum) return alert('Wallet not found');
         if (!walletAddress) return alert('Connect your wallet first');
         if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
             return alert('Please enter a valid donation amount');
         }
 
         try {
-            const provider = new ethers.BrowserProvider(window.ethereum);
+            const provider = new ethers.BrowserProvider(window.rabby || window.ethereum);
             const signer = await provider.getSigner();
 
             const tx = await signer.sendTransaction({
@@ -53,10 +76,9 @@ const Project = () => {
                 walletAddress,
             });
 
-            // Refresh project data
             const updated = await axios.get(`https://umi-b.onrender.com/api/projects/${id}`);
             setProject(updated.data);
-            setAmount(''); // clear input
+            setAmount('');
         } catch (err) {
             console.error('Donation error:', err);
             setTxStatus('Transaction failed.');
@@ -71,7 +93,6 @@ const Project = () => {
         <Layout>
             <div className='p-10'>
                 <div className="bg-[#14D30D] bg-opacity-30 rounded-2xl shadow-xl px-10 py-8 flex flex-col md:flex-row gap-10 items-start">
-                    {/* Left: Image + Avatar + Progress */}
                     <div className="w-full md:w-[40%]">
                         <img
                             src={project.image || "/assets/placeholder.jpg"}
@@ -99,7 +120,6 @@ const Project = () => {
                         </div>
                     </div>
 
-                    {/* Right: Details */}
                     <div className="flex-1 font-gantari text-gray-800">
                         <h1 className="text-6xl font-gamja font-bold mb-3">{project.name}</h1>
                         <p className="text-lg leading-7 mb-4">{project.description}</p>
