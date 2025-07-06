@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import { ethers } from 'ethers'; 
 
 const Games = () => {
   const [user, setUser] = useState(null);
@@ -32,18 +33,40 @@ const Games = () => {
   }, [walletAddress]);
 
   const handleUnlock = async () => {
+    if (!window.ethereum) {
+      alert('Please install Rabby Wallet or MetaMask to continue.');
+      return;
+    }
+
     try {
-      alert('Processing payment...');
-      const res = await axios.post(`/api/users/${walletAddress}/purchase`, {
+      setLoading(true);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+
+      const amountInEth = '0.1'; // Price of the game
+      const tx = await signer.sendTransaction({
+        to: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192', // 
+        value: ethers.utils.parseEther(amountInEth),
+      });
+
+      alert('Waiting for transaction confirmation...');
+      await tx.wait();
+
+      // Call backend to register purchase
+      await axios.post(`/api/users/${walletAddress}/purchase`, {
         itemId: 'fishies',
         name: 'Fishies of the Game',
-        amount: 1.5,
+        amount: parseFloat(amountInEth),
       });
+
       alert('Game unlocked!');
       window.location.href = '/games?game=fishies';
     } catch (err) {
       console.error('Payment failed:', err);
-      alert('Payment failed. Try again.');
+      alert('Payment failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,7 +76,7 @@ const Games = () => {
 
   const isPurchased = user?.purchases?.some(p => p.itemId === 'fishies');
 
-  // 👉 GAME VIEW MODE
+  
   if (game === 'fishies') {
     return (
       <Layout>
@@ -71,7 +94,7 @@ const Games = () => {
     );
   }
 
-  // 👉 DEFAULT GAMES LISTING MODE
+  
   return (
     <Layout>
       <div
@@ -116,8 +139,9 @@ const Games = () => {
                 <button
                   onClick={handleUnlock}
                   className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-xl font-semibold font-gantari"
+                  disabled={loading}
                 >
-                  Unlock & Play
+                  {loading ? 'Processing...' : 'Unlock & Play'}
                 </button>
               )}
             </div>
