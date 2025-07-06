@@ -25,7 +25,7 @@ let gameOver = false;
 let inRules = true;
 
 function preload() {
-  this.load.atlasXML('fishAtlas', '/fishies/spritesheet.png', '/fishies/spritesheet.xml');
+  this.load.atlasXML('fishAtlas', './spritesheet.png', './spritesheet.xml');
 }
 
 function create() {
