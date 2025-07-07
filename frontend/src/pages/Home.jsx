@@ -60,10 +60,10 @@ const Home = () => {
         style={{ backgroundImage: "url('/assets/image 1.png')" }}
       >
         {/* Dimmed overlay for contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/25 to-black/25 z-0" />
+        <div className="absolute inset-0 bg-opacity-90 z-0" />
 
         <motion.h1
-          className="z-10 font-gantari font-bold text-white text-5xl sm:text-7xl md:text-9xl leading-tight drop-shadow-md"
+          className="z-10 font-gantari font-bold -mt-28 text-9xl leading-tight drop-shadow-md"
           initial={{ opacity: 0, y: -80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -72,7 +72,7 @@ const Home = () => {
         </motion.h1>
 
         <motion.p
-          className="z-10 mt-6 text-white font-gamja text-4xl  drop-shadow"
+          className="z-10 mt-4 text-blue-800 font-gamja text-4xl  drop-shadow"
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -81,7 +81,7 @@ const Home = () => {
         </motion.p>
 
         <motion.p
-          className="z-10 mt-3 text-white font-gamja text-2xl drop-shadow"
+          className="z-10 mt-3 text-white bg-green-500 bg-opacity-80 font-gamja text-3xl drop-shadow"
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -90,7 +90,7 @@ const Home = () => {
         </motion.p>
 
         <motion.p
-          className="z-10 mt-5 text-[#C0FFC0] font-semibold font-gantari text-lg tracking-wide"
+          className="z-10 mt-5 text-[#C0FFC0] font-semibold font-gantari text-xl tracking-wide"
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.8 }}
