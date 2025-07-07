@@ -58,19 +58,18 @@ const Project = () => {
         }
 
         try {
-            const provider = new ethers.BrowserProvider(window.rabby || window.ethereum);
-            const signer = await provider.getSigner();
+            const provider = new ethers.providers.Web3Provider(window.rabby || window.ethereum); // ✅ for ethers@5
+            const signer = provider.getSigner();
 
             const tx = await signer.sendTransaction({
                 to: project.wallet,
-                value: ethers.parseEther(amount),
+                value: ethers.utils.parseEther(amount), // ✅ parseEther from utils in v5
             });
 
             setTxStatus('Transaction sent. Waiting for confirmation...');
             await tx.wait();
             setTxStatus('Donation successful! Thank you ❤️');
 
-            // Update DB
             await axios.post(`https://umi-b.onrender.com/api/projects/${id}/donate`, {
                 amount: parseFloat(amount),
                 walletAddress,
