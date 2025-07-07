@@ -61,6 +61,8 @@ const Games = () => {
         amount: parseFloat(amountInEth),
       });
 
+      const res = await axios.get(`/api/users/${walletAddress}`);
+      setUser(res.data);
       alert('Game unlocked!');
       navigate('/games?game=fishies');
     } catch (err) {
