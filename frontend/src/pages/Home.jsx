@@ -13,11 +13,14 @@ const Home = () => {
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const accounts = await provider.send('eth_requestAccounts', []);
-        setWalletAddress(accounts[0]);
-        localStorage.setItem('walletAddress', accounts[0]); //  correct
-        navigate('/dashboard', { state: { walletAddress: accounts[0] } });
+        const provider = new ethers.providers.Web3Provider(window.ethereum); // ✅ v5 syntax
+        await provider.send('eth_requestAccounts', []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+
+        setWalletAddress(address);
+        localStorage.setItem('walletAddress', address);
+        navigate('/dashboard', { state: { walletAddress: address } });
 
       } catch (error) {
         console.error('Connection Error:', error);
