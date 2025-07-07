@@ -1,14 +1,16 @@
+// Games.jsx
 import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
-import { ethers } from 'ethers'; 
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ethers } from 'ethers';
 
 const Games = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const query = new URLSearchParams(location.search);
   const game = query.get('game');
 
@@ -42,18 +44,17 @@ const Games = () => {
       setLoading(true);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const address = await signer.getAddress();
+      await signer.getAddress();
 
-      const amountInEth = '0.1'; // Price of the game
+      const amountInEth = '0.1';
       const tx = await signer.sendTransaction({
-        to: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192', // 
+        to: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
         value: ethers.utils.parseEther(amountInEth),
       });
 
       alert('Waiting for transaction confirmation...');
       await tx.wait();
 
-      // Call backend to register purchase
       await axios.post(`/api/users/${walletAddress}/purchase`, {
         itemId: 'fishies',
         name: 'Fishies of the Game',
@@ -61,7 +62,7 @@ const Games = () => {
       });
 
       alert('Game unlocked!');
-      window.location.href = '/games?game=fishies';
+      navigate('/games?game=fishies');
     } catch (err) {
       console.error('Payment failed:', err);
       alert('Payment failed. Please try again.');
@@ -71,18 +72,28 @@ const Games = () => {
   };
 
   const handlePlay = () => {
-    window.location.href = '/games?game=fishies';
+    navigate('/games?game=fishies');
   };
 
   const isPurchased = user?.purchases?.some(p => p.itemId === 'fishies');
 
-  
+  // If playing the game
   if (game === 'fishies') {
+    if (!isPurchased) {
+      return (
+        <Layout>
+          <div className="w-full h-screen flex items-center justify-center bg-black text-white text-xl">
+            <p>You haven’t purchased this game yet.</p>
+          </div>
+        </Layout>
+      );
+    }
+
     return (
       <Layout>
         <div className="w-full h-screen bg-black flex items-center justify-center">
           <iframe
-            src={`${window.location.origin}/fishies/index.html`}
+            src="/fishies/index.html"
             title="Fishies Game"
             width="100%"
             height="100%"
@@ -94,7 +105,7 @@ const Games = () => {
     );
   }
 
-  
+  // Game listing page
   return (
     <Layout>
       <div
