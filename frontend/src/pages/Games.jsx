@@ -1,4 +1,3 @@
-// Games.jsx
 import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
 import axios from 'axios';
@@ -8,6 +7,7 @@ import { ethers } from 'ethers';
 const Games = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const Games = () => {
     }
 
     try {
-      setLoading(true);
+      setProcessingPayment(true);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       await signer.getAddress();
@@ -69,7 +69,7 @@ const Games = () => {
       console.error('Payment failed:', err);
       alert('Payment failed. Please try again.');
     } finally {
-      setLoading(false);
+      setProcessingPayment(false);
     }
   };
 
@@ -79,13 +79,13 @@ const Games = () => {
 
   const isPurchased = user?.purchases?.some(p => p.itemId === 'fishies');
 
-  // If playing the game
+  // If the game is being played directly
   if (game === 'fishies') {
     if (!isPurchased) {
       return (
         <Layout>
-          <div className="w-full h-screen flex items-center justify-center bg-black text-white text-xl">
-            <p>You haven’t purchased this game yet.</p>
+          <div className="w-full h-screen flex items-center justify-center bg-black text-white text-center px-4">
+            <p className="text-xl font-gantari">You haven’t purchased this game yet.</p>
           </div>
         </Layout>
       );
@@ -114,7 +114,7 @@ const Games = () => {
         className="min-h-screen w-full bg-cover bg-center bg-no-repeat py-12 px-4"
         style={{ backgroundImage: "url('/assets/image4.png')" }}
       >
-        <h1 className="text-7xl font-gamja font-bold mb-10 text-center text-white drop-shadow-lg">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-gamja font-bold mb-10 text-center text-white drop-shadow-lg">
           Games
         </h1>
 
@@ -127,15 +127,15 @@ const Games = () => {
               alt="Fishies"
               className="w-full md:w-64 h-64 object-cover"
             />
-            <div className="p-6 flex flex-col justify-between">
+            <div className="p-6 flex flex-col justify-between text-center md:text-left">
               <div>
-                <h2 className="text-4xl font-gamja font-bold mb-2">🐟 Fishies</h2>
-                <p className="text-lg font-gantari mb-4 text-gray-700">
+                <h2 className="text-3xl md:text-4xl font-gamja font-bold mb-2">🐟 Fishies</h2>
+                <p className="text-base md:text-lg font-gantari mb-4 text-gray-700">
                   Dive into an underwater adventure and rescue coral reefs while dodging
                   pollution. A fun way to support ocean preservation!
                 </p>
                 {!isPurchased && (
-                  <p className="text-green-600 font-semibold text-xl font-gantari">
+                  <p className="text-green-600 font-semibold text-lg md:text-xl font-gantari">
                     Unlock for just <span className="font-bold">0.1 ETH</span>
                   </p>
                 )}
@@ -144,17 +144,17 @@ const Games = () => {
               {isPurchased ? (
                 <button
                   onClick={handlePlay}
-                  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-xl font-semibold font-gantari"
+                  className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-lg md:text-xl font-semibold font-gantari"
                 >
                   Play Now
                 </button>
               ) : (
                 <button
                   onClick={handleUnlock}
-                  className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-xl font-semibold font-gantari"
-                  disabled={loading}
+                  className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-lg md:text-xl font-semibold font-gantari disabled:opacity-50"
+                  disabled={processingPayment}
                 >
-                  {loading ? 'Processing...' : 'Unlock & Play'}
+                  {processingPayment ? 'Processing...' : 'Unlock & Play'}
                 </button>
               )}
             </div>

@@ -56,38 +56,40 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] px-4 bg-gray-50">
-        <h1 className="text-5xl font-gamja font-bold mb-10 text-lime-700 text-center">Edit Your Profile</h1>
+      <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] px-4 py-10 bg-gray-50">
+        <h1 className="text-4xl sm:text-5xl font-gamja font-bold mb-8 text-lime-700 text-center">
+          Edit Your Profile
+        </h1>
 
-        <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-8 space-y-8 font-gantari">
+        <div className="w-full max-w-2xl bg-white rounded-3xl shadow-lg p-6 sm:p-8 space-y-8 font-gantari">
           {/* Name Input */}
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">Name</label>
+            <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
-              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none text-sm sm:text-base"
             />
           </div>
 
           {/* Bio Input */}
           <div>
-            <label className="block text-lg font-semibold mb-2 text-gray-700">Bio</label>
+            <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Bio</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Write something about yourself"
               rows="4"
-              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-lime-500 focus:outline-none text-sm sm:text-base"
             />
           </div>
 
           {/* Avatar Picker */}
           <div>
-            <label className="block text-lg font-semibold mb-4 text-gray-700">Choose Avatar</label>
-            <div className="flex gap-6 justify-center md:justify-start">
+            <label className="block text-base sm:text-lg font-semibold mb-4 text-gray-700">Choose Avatar</label>
+            <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-start">
               {avatarOptions.map((img) => (
                 <label key={img} className="cursor-pointer group">
                   <input
@@ -99,7 +101,7 @@ const Profile = () => {
                     className="hidden"
                   />
                   <div
-                    className={`w-24 h-24 rounded-full overflow-hidden border-4 transition duration-300 ${
+                    className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 transition-all duration-300 ${
                       avatar === img
                         ? 'border-lime-500 ring-4 ring-lime-300'
                         : 'border-transparent group-hover:scale-105'
@@ -117,10 +119,10 @@ const Profile = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-center pt-4">
+          <div className="flex justify-center pt-2">
             <button
               onClick={handleSubmit}
-              className="bg-lime-600 hover:bg-lime-700 text-white text-xl px-8 py-3 rounded-xl shadow-lg transition duration-300"
+              className="bg-lime-600 hover:bg-lime-700 text-white text-lg sm:text-xl px-6 sm:px-8 py-2 sm:py-3 rounded-xl shadow-lg transition duration-300"
             >
               Save Profile
             </button>
