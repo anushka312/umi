@@ -30,7 +30,6 @@ VerdeFi is a purpose-driven Web3 app built on the **Umi Devnet**, where users un
 A relaxing yet subtly challenging game built with **Phaser.js**.  
 - ✅ Collect correct fish to score points  
 - ❌ Avoid wrong fish — they stay on screen and block movement  
-- 🎯 No timer, no leaderboard — just a cozy, escalating challenge
 
 ---
 
