@@ -5,7 +5,7 @@ const Works = () => {
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-screen bg-[#f3fef3]">
       {/* Left Image */}
-      <div className="w-full lg:w-1/2 h-64 lg:h-auto">
+      <div className="w-auto lg:w-1/3 h-40 lg:h-auto">
         <img
           src="/assets/image2.png"
           className="w-full h-full object-cover"
@@ -14,8 +14,9 @@ const Works = () => {
       </div>
 
       {/* Right Content */}
-      <div className="flex-1 bg-[#00DA0F]/20 py-10 px-4 sm:px-8 lg:px-14">
-        <div className="max-w-4xl mx-auto space-y-10">
+      <div className="min-h-screen flex items-center justify-center bg-[#00DA0F]/20 py-10 px-4 sm:px-8 lg:px-14">
+
+        <div className="max-w-4xl mx-auto space-y-12 ">
 
           <motion.div
             initial={{ x: -100, opacity: 0 }}
