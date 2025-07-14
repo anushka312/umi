@@ -7,7 +7,7 @@ const cors = require('cors');
 connectDB();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://verdefi.onrender.com/'],
+  origin: ['http://localhost:5173', 'https://verdefi.onrender.com'],
   credentials: true
 }));
 
