@@ -3,6 +3,9 @@ import { ethers } from 'ethers';
 import { useParams } from 'react-router-dom';
 import Layout from './Layout';
 import axios from 'axios';
+import DonationNFT from '../contract/DonationNFT.json'; // 
+
+const DONATION_NFT_CONTRACT_ADDRESS = '0xe42636c12a967cd5e42f1d5a6464d04ecee9ca24';
 
 const Project = () => {
     const { id } = useParams();
@@ -42,6 +45,25 @@ const Project = () => {
         }
     };
 
+    const mintNFT = async (walletAddress, nftUrl) => {
+        try {
+            const provider = new ethers.providers.Web3Provider(window.rabby || window.ethereum);
+            const signer = provider.getSigner();
+
+            const contract = new ethers.Contract(
+                DONATION_NFT_CONTRACT_ADDRESS,
+                DonationNFT.abi,
+                signer
+            );
+
+            const tx = await contract.safeMint(walletAddress, nftUrl);
+            await tx.wait();
+            console.log(' NFT minted!');
+        } catch (err) {
+            console.error('Minting failed:', err);
+        }
+    };
+
     const donate = async () => {
         const isCorrectNetwork = await checkUmiNetwork();
         if (!isCorrectNetwork) return;
@@ -75,6 +97,18 @@ const Project = () => {
                 amount: parseFloat(amount),
                 walletAddress,
             });
+
+            // Choose NFT URL
+            let nftUrl = '';
+
+            if (project.name.toLowerCase().includes('solar')) {
+                nftUrl = 'https://gateway.pinata.cloud/ipfs/bafkreic65f6mfovminxi7qywtkwfl54e3lvcjmz3qnmid7gomnbgmclp5y';
+            } else {
+                nftUrl = 'https://gateway.pinata.cloud/ipfs/bafkreie6jfj6w6nnlciwzd5wc27yc376aknp5uhbyiriz7elmvczbnqety';
+            }
+
+
+            await mintNFT(walletAddress, nftUrl);
 
             const updated = await axios.get(`https://umi-b.onrender.com/api/projects/${id}`);
             setProject(updated.data);
@@ -154,9 +188,8 @@ const Project = () => {
                             <button
                                 onClick={donate}
                                 disabled={txStatus.includes('Waiting')}
-                                className={`bg-lime-500 text-white font-bold px-6 py-2 text-lg rounded-xl mt-1 sm:mt-0 ${
-                                    txStatus.includes('Waiting') ? 'opacity-50 cursor-not-allowed' : 'hover:bg-lime-600'
-                                }`}
+                                className={`bg-lime-500 text-white font-bold px-6 py-2 text-lg rounded-xl mt-1 sm:mt-0 ${txStatus.includes('Waiting') ? 'opacity-50 cursor-not-allowed' : 'hover:bg-lime-600'
+                                    }`}
                             >
                                 Donate Now!
                             </button>

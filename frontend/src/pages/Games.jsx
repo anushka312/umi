@@ -48,7 +48,7 @@ const Games = () => {
 
       const amountInEth = '0.1';
       const tx = await signer.sendTransaction({
-        to: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
+        to: '0xcBbB388677fBb1F8637db6c167c7C4b7167D414b',
         value: ethers.utils.parseEther(amountInEth),
       });
 

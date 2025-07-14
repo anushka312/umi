@@ -2,7 +2,7 @@ const projects = [
   {
     id: '1',
     name: 'Clean the Ganges',
-    wallet: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
+    wallet: '0xcBbB388677fBb1F8637db6c167c7C4b7167D414b',
     description:
       'Join us in removing plastic waste from the sacred river.',
     image: '/assets/ganges.jpg',
@@ -17,7 +17,7 @@ const projects = [
   {
     id: '2',
     name: 'Solar Village',
-    wallet: '0x8834EDD41DCA0C832C5FE9bcE709eE9b6817f192',
+    wallet: '0xcBbB388677fBb1F8637db6c167c7C4b7167D414b',
     description:
       'Help install solar panels in a remote village in Rajasthan.',
     image: '/assets/solar.jpg',
