@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+'use client';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Layout from './Layout';
 import axios from 'axios';
-import DonationNFT from '../contract/DonationNFT.json'; // 
+import { getAccount, publicClient, walletClient } from '../../config';
+import Layout from './Layout';
+import { ethers } from 'ethers';
 
-const DONATION_NFT_CONTRACT_ADDRESS = '0xe42636c12a967cd5e42f1d5a6464d04ecee9ca24';
+const NFT_CONTRACT_ADDRESS = '0x0695e768dFB857Ab13a833a260803DBFf3e2fdBA';
+const OWNER_ADDRESS = '0xcBbB388677fBb1F8637db6c167c7C4b7167D414b'; // your hardcoded address
 
 const Project = () => {
     const { id } = useParams();
     const [project, setProject] = useState(null);
     const [walletAddress, setWalletAddress] = useState('');
-    const [txStatus, setTxStatus] = useState('');
     const [amount, setAmount] = useState('');
+    const [txStatus, setTxStatus] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const address = localStorage.getItem('walletAddress');
-        if (address) setWalletAddress(address);
+        const addr = localStorage.getItem('walletAddress');
+        if (addr) setWalletAddress(addr);
 
         axios.get(`https://umi-b.onrender.com/api/projects/${id}`)
             .then((res) => setProject(res.data))
@@ -25,107 +27,72 @@ const Project = () => {
             .finally(() => setLoading(false));
     }, [id]);
 
-    const checkUmiNetwork = async () => {
-        const provider = window.rabby || window.ethereum;
-        if (!provider) {
-            alert('No wallet found. Please install Rabby.');
-            return false;
-        }
-
-        try {
-            const chainId = await provider.request({ method: 'eth_chainId' });
-            if (chainId !== '0xa455') {
-                alert('Please switch to Umi Devnet in Rabby Wallet (chainId: 0xa455).');
-                return false;
-            }
-            return true;
-        } catch (err) {
-            console.error('Error checking network:', err);
-            return false;
-        }
-    };
-
-    const mintNFT = async (walletAddress, nftUrl) => {
-        try {
-            const provider = new ethers.providers.Web3Provider(window.rabby || window.ethereum);
-            const signer = provider.getSigner();
-
-            const contract = new ethers.Contract(
-                DONATION_NFT_CONTRACT_ADDRESS,
-                DonationNFT.abi,
-                signer
-            );
-
-            const tx = await contract.safeMint(walletAddress, nftUrl);
-            await tx.wait();
-            console.log(' NFT minted!');
-        } catch (err) {
-            console.error('Minting failed:', err);
-        }
-    };
-
     const donate = async () => {
-        const isCorrectNetwork = await checkUmiNetwork();
-        if (!isCorrectNetwork) return;
-
-        await axios.post('https://umi-b.onrender.com/api/users', {
-            walletAddress,
-            name: '',
-            bio: '',
-            avatar: '',
-        });
-
         if (!walletAddress) return alert('Connect your wallet first');
         if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
             return alert('Please enter a valid donation amount');
         }
 
         try {
-            const provider = new ethers.providers.Web3Provider(window.rabby || window.ethereum);
-            const signer = provider.getSigner();
+            const account = await getAccount();
 
-            const tx = await signer.sendTransaction({
-                to: project.wallet,
+            // ✅ Send donation to the project wallet
+            const txHash = await walletClient().sendTransaction({
+                account,
+                to: project.wallet, // ✅ Send ETH directly to the project's wallet
                 value: ethers.utils.parseEther(amount),
             });
 
             setTxStatus('Transaction sent. Waiting for confirmation...');
-            await tx.wait();
-            setTxStatus('Donation successful! Thank you ❤️');
+            await publicClient().waitForTransactionReceipt({ hash: txHash });
+            setTxStatus('Donation successful! Minting NFT...');
+
+            // ✅ Register user & donation in your backend
+            await axios.post(`https://umi-b.onrender.com/api/users`, {
+                walletAddress,
+                name: '',
+                bio: '',
+                avatar: '',
+            });
 
             await axios.post(`https://umi-b.onrender.com/api/projects/${id}/donate`, {
                 amount: parseFloat(amount),
                 walletAddress,
             });
 
-            // Choose NFT URL
-            let nftUrl = '';
+            // ✅ Choose NFT metadata URL based on project
+            let nftUrl = project.name.toLowerCase().includes('solar')
+                ? 'https://gateway.pinata.cloud/ipfs/bafkreic65f6mfovminxi7qywtkwfl54e3lvcjmz3qnmid7gomnbgmclp5y'
+                : 'https://gateway.pinata.cloud/ipfs/bafkreie6jfj6w6nnlciwzd5wc27yc376aknp5uhbyiriz7elmvczbnqety';
 
-            if (project.name.toLowerCase().includes('solar')) {
-                nftUrl = 'https://gateway.pinata.cloud/ipfs/bafkreic65f6mfovminxi7qywtkwfl54e3lvcjmz3qnmid7gomnbgmclp5y';
-            } else {
-                nftUrl = 'https://gateway.pinata.cloud/ipfs/bafkreie6jfj6w6nnlciwzd5wc27yc376aknp5uhbyiriz7elmvczbnqety';
-            }
+            // ✅ Mint the NFT using donor's wallet
+            const iface = new ethers.utils.Interface([
+                'function mintDonationNFT(address recipient, string memory tokenURI)'
+            ]);
+            const encoded = iface.encodeFunctionData('mintDonationNFT', [account, nftUrl]);
 
 
-            await mintNFT(walletAddress, nftUrl);
+            await walletClient().sendTransaction({
+                account,
+                to: NFT_CONTRACT_ADDRESS,
+                data: encoded,
+            });
+
+            setTxStatus('NFT minted successfully 🎉');
+            setAmount('');
 
             const updated = await axios.get(`https://umi-b.onrender.com/api/projects/${id}`);
             setProject(updated.data);
-            setAmount('');
+
         } catch (err) {
-            console.error('Donation error:', err);
-            setTxStatus('Transaction failed.');
+            console.error(err);
+            setTxStatus('Donation failed or NFT minting error.');
         }
     };
 
-    if (loading) {
-        return <Layout><p className="text-center py-20 text-xl">Loading project...</p></Layout>;
-    }
 
-    if (!project) {
-        return <Layout><p className="text-center py-20 text-xl text-red-500">Project not found</p></Layout>;
-    }
+    if (loading) return <Layout><p className="text-center py-20 text-xl">Loading project...</p></Layout>;
+    if (!project) return <Layout><p className="text-center py-20 text-xl text-red-500">Project not found</p></Layout>;
 
     const progress = (project.raised / project.goal) * 100;
 
@@ -133,35 +100,24 @@ const Project = () => {
         <Layout>
             <div className="px-4 sm:px-6 lg:px-10 py-10 max-w-7xl mx-auto">
                 <div className="bg-[#14D30D] bg-opacity-30 rounded-2xl shadow-xl px-6 sm:px-10 py-8 flex flex-col md:flex-row gap-10 items-start">
-                    {/* Left Column */}
                     <div className="w-full md:w-[40%]">
                         <img
                             src={project.image || "/assets/placeholder.jpg"}
                             alt={project.name}
                             className="w-full aspect-[507/436] object-cover rounded-xl"
                         />
-
                         <div className="flex items-center mt-4">
-                            <img
-                                src="/assets/avatar_black_4.jpg"
-                                alt="avatar"
-                                className="w-10 h-10 rounded-full mr-3"
-                            />
+                            <img src="/assets/avatar_black_4.jpg" alt="avatar" className="w-10 h-10 rounded-full mr-3" />
                             <div>
                                 <p className="text-sm font-bold text-gray-600">Raised By:</p>
                                 <p className="text-md font-bold">{project.raisedBy}</p>
                             </div>
                         </div>
-
                         <div className="h-2 w-full bg-gray-300 mt-2 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-orange-500"
-                                style={{ width: `${progress}%` }}
-                            ></div>
+                            <div className="h-full bg-orange-500" style={{ width: `${progress}%` }}></div>
                         </div>
                     </div>
 
-                    {/* Right Column */}
                     <div className="flex-1 font-gantari text-gray-800">
                         <h1 className="text-3xl sm:text-5xl md:text-6xl font-gamja font-bold mb-4">{project.name}</h1>
                         <p className="text-base sm:text-lg leading-7 mb-4">{project.description}</p>
@@ -169,11 +125,9 @@ const Project = () => {
                         <div className="text-lg font-medium mb-4">
                             <p className="text-green-700 font-semibold mb-1">Benefits:</p>
                             <ul className="list-disc list-inside text-green-700">
-                                {Array.isArray(project.benefits) && project.benefits.length > 0 ? (
-                                    project.benefits.map((b, i) => <li key={i}>{b}</li>)
-                                ) : (
-                                    <li>No benefits listed.</li>
-                                )}
+                                {Array.isArray(project.benefits) && project.benefits.length > 0
+                                    ? project.benefits.map((b, i) => <li key={i}>{b}</li>)
+                                    : <li>No benefits listed.</li>}
                             </ul>
                         </div>
 
@@ -195,11 +149,7 @@ const Project = () => {
                             </button>
                         </div>
 
-                        {txStatus && (
-                            <div className="mt-2 text-sm text-gray-800 italic">
-                                {txStatus}
-                            </div>
-                        )}
+                        {txStatus && <div className="mt-2 text-sm text-gray-800 italic">{txStatus}</div>}
 
                         <div className="mt-2 text-red-400 text-sm">
                             🔴 Just a heads up :) <br />
@@ -210,12 +160,8 @@ const Project = () => {
                             <p className="text-lg font-bold text-gray-900">
                                 Raised: <span className="text-blue-600">{Number(project.raised).toFixed(3)} ETH</span> / {project.goal} ETH
                             </p>
-                            <p className="text-sm mt-1 text-gray-700">
-                                Contributed by: {project.contributors} people
-                            </p>
-                            <p className="text-sm text-red-500 font-bold">
-                                Highest Tip: {project.highestTip} ETH
-                            </p>
+                            <p className="text-sm mt-1 text-gray-700">Contributed by: {project.contributors} people</p>
+                            <p className="text-sm text-red-500 font-bold">Highest Tip: {project.highestTip} ETH</p>
                         </div>
 
                         {project.link && (
