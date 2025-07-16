@@ -36,10 +36,10 @@ const Project = () => {
         try {
             const account = await getAccount();
 
-            // ✅ Send donation to the project wallet
+            // ✅ Step 1: Send donation to the project wallet
             const txHash = await walletClient().sendTransaction({
                 account,
-                to: project.wallet, // ✅ Send ETH directly to the project's wallet
+                to: project.wallet,
                 value: ethers.utils.parseEther(amount),
             });
 
@@ -47,7 +47,7 @@ const Project = () => {
             await publicClient().waitForTransactionReceipt({ hash: txHash });
             setTxStatus('Donation successful! Minting NFT...');
 
-            // ✅ Register user & donation in your backend
+            // ✅ Step 2: Register donor & donation in backend
             await axios.post(`https://umi-b.onrender.com/api/users`, {
                 walletAddress,
                 name: '',
@@ -60,22 +60,24 @@ const Project = () => {
                 walletAddress,
             });
 
-            // ✅ Choose NFT metadata URL based on project
+            // ✅ Step 3: Select NFT metadata
             let nftUrl = project.name.toLowerCase().includes('solar')
                 ? 'https://gateway.pinata.cloud/ipfs/bafkreic65f6mfovminxi7qywtkwfl54e3lvcjmz3qnmid7gomnbgmclp5y'
                 : 'https://gateway.pinata.cloud/ipfs/bafkreie6jfj6w6nnlciwzd5wc27yc376aknp5uhbyiriz7elmvczbnqety';
 
-            // ✅ Mint the NFT using donor's wallet
+            // ✅ Step 4: Encode + Serialize call to mintDonationNFT()
             const iface = new ethers.utils.Interface([
                 'function mintDonationNFT(address recipient, string memory tokenURI)'
             ]);
             const encoded = iface.encodeFunctionData('mintDonationNFT', [account, nftUrl]);
+            const serializedData = serializeFunction(encoded);
 
-
+            // ✅ Step 5: Mint NFT via Viem
             await walletClient().sendTransaction({
                 account,
                 to: NFT_CONTRACT_ADDRESS,
-                data: serializeFunction(encoded),
+                data: serializedData,
+                gas: 1_000_000n // 🛠️ optional but helps on L2s where estimation fails
             });
 
             setTxStatus('NFT minted successfully 🎉');
@@ -89,6 +91,7 @@ const Project = () => {
             setTxStatus('Donation failed or NFT minting error.');
         }
     };
+
 
 
     if (loading) return <Layout><p className="text-center py-20 text-xl">Loading project...</p></Layout>;
