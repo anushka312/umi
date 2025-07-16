@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { getAccount, publicClient, walletClient } from '../../config';
+import { getAccount, publicClient, walletClient, serializeFunction } from '../../config';
 import Layout from './Layout';
 import { ethers } from 'ethers';
 
@@ -75,7 +75,7 @@ const Project = () => {
             await walletClient().sendTransaction({
                 account,
                 to: NFT_CONTRACT_ADDRESS,
-                data: encoded,
+                data: serializeFunction(encoded),
             });
 
             setTxStatus('NFT minted successfully 🎉');
